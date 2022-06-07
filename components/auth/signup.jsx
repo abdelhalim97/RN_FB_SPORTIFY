@@ -7,12 +7,12 @@ import { useNavigation } from '@react-navigation/core';
 import { InputCustom, TouchbaleOpacityCustom } from '../reusable';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
 const Signup = () => {
-    const [form, setForm] = useState({email:'',password:''})
+    const [form, setForm] = useState({email:'',password:'',name:''})
     const handleChangeLogIn=(value,key)=>setForm({...form,...{[key]:value}})
      const handleSignup =async()=>{
          try {
             const {user}=await createUserWithEmailAndPassword(auth,form.email,form.password)
-            await updateProfile(user,{'displayName':name,})
+            await updateProfile(user,{'displayName':form.name,})
          } catch (error) {
              console.log(error)
          }

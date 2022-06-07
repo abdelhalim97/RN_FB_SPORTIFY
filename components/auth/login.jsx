@@ -6,6 +6,7 @@ import {auth} from '../../firebase'
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import CircleContainer from '../reusable/circle-container';
 import { useNavigation } from '@react-navigation/core';
+import GoogleAuth from './google-auth';
 
  const Login = () => {
      const [form, setForm] = useState({email:'',password:''})
@@ -40,7 +41,11 @@ import { useNavigation } from '@react-navigation/core';
         onChangeText={text=>handleChangeLogIn(text,data.id)}/>
         )}
         <TouchbaleOpacityCustom text='Login' fnc={()=>handleLogin()} style={styles.btn}/>
-        <TouchableOpacity onPress={()=>navigation.navigate('Signup')} style={{alignItems:'center',marginTop:hp('2%')}}>
+        <GoogleAuth/>
+        <TouchableOpacity onPress={()=>navigation.navigate('ForgotPassword')} style={{alignItems:'center',marginTop:hp('1%')}}>
+            <Text style={{fontSize:20,color:'#AD9C9D'}}>Forgot password</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={()=>navigation.navigate('Signup')} style={{alignItems:'center',marginTop:hp('1%')}}>
             <Text style={{fontSize:20,color:'#AD9C9D'}}>You don't have an account?</Text>
         </TouchableOpacity>
     </CircleContainer>
