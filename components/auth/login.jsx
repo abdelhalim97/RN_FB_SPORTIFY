@@ -1,24 +1,27 @@
 import { StyleSheet,TouchableOpacity,Text } from 'react-native'
-import React,{useState} from 'react'
+import React,{useState,useContext} from 'react'
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {InputCustom, TouchbaleOpacityCustom} from '../reusable';
+import {InputCustom, TouchableOpacityCustom} from '../reusable';
 import {auth} from '../../firebase'
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import CircleContainer from '../reusable/circle-container';
 import { useNavigation } from '@react-navigation/core';
 import GoogleAuth from './google-auth';
-
+import { UserContext } from '../contexts/user-context'
  const Login = () => {
+     const navigation = useNavigation()
      const [form, setForm] = useState({email:'',password:''})
+     const {setUser} = useContext(UserContext)
      const handleChangeLogIn=(value,key)=>setForm({...form,...{[key]:value}})
      const handleLogin =async()=>{
          try {
-             await signInWithEmailAndPassword(auth,form.email,form.password)
+            var {user} = await signInWithEmailAndPassword(auth,form.email,form.password)
          } catch (error) {
              console.log(error)
          }
+         setUser(user)
+        //  navigation.navigate('Terrains')
      }
-     const navigation = useNavigation()
      const dataInput=[
          {
              id:'email',
@@ -40,7 +43,7 @@ import GoogleAuth from './google-auth';
         autoFocus={data.id==='email'} pass={data.pass} keyboardType={data.keyboardType}
         onChangeText={text=>handleChangeLogIn(text,data.id)}/>
         )}
-        <TouchbaleOpacityCustom text='Login' fnc={()=>handleLogin()} style={styles.btn}/>
+        <TouchableOpacityCustom text='Login' fnc={()=>handleLogin()} style={styles.btn}/>
         <GoogleAuth/>
         <TouchableOpacity onPress={()=>navigation.navigate('ForgotPassword')} style={{alignItems:'center',marginTop:hp('1%')}}>
             <Text style={{fontSize:20,color:'#AD9C9D'}}>Forgot password</Text>

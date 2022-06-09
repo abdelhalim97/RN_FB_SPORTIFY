@@ -1,4 +1,5 @@
 import InputCustom from './input-custom'
-import TouchbaleOpacityCustom from './touchbale-opacity-custom'
+import TouchableOpacityCustom from './touchable-opacity-custom'
+import TouchbaleIconCustom from './touchbale-icon-custom'
 
-export {InputCustom,TouchbaleOpacityCustom}
+export {InputCustom,TouchableOpacityCustom,TouchbaleIconCustom}

@@ -33,7 +33,7 @@ const GoogleAuth = () => {
     userInfoResponse.json().then(data => {
       setUser(data);
     });
-    navigation.navigate('Terrains')
+    // navigation.navigate('Terrains')
   }
   return (
     <TouchableOpacity style={styles.container} 

@@ -1,4 +1,4 @@
-import React,{useState} from 'react'
+import React,{useState,useEffect} from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Login, Signup,ForgotPassword } from './components/auth';
@@ -7,6 +7,11 @@ import { UserContext } from './components/contexts/user-context';
 const Pages = () => {
     const Stack = createNativeStackNavigator();
     const [user, setUser] = useState(null)
+    // const userData = setUser(user)
+    // useEffect(() => {
+    //   setUser(userData)
+    // }, [user])
+    
   return (
     <NavigationContainer>
       <UserContext.Provider value={{user,setUser}}>
@@ -19,7 +24,7 @@ const Pages = () => {
         </>
         :
         <>
-          <Stack.Screen name="Terrains" component={Terrains} options={{ headerShown:true }}/>
+          <Stack.Screen name="Terrains" component={Terrains} options={{ headerShown:false }}/>
         </>
         }
       </Stack.Navigator>
