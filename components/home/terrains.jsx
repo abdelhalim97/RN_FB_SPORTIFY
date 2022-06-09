@@ -6,11 +6,11 @@ import { ref,onValue } from 'firebase/database'
 import { auth,db } from '../../firebase'
 import {TouchbaleIconCustom} from '../reusable'
 import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons'
+import {Map} from './sub-home'
 
 const Terrains = () => {
   const [data, setData] = useState([])
   const {user,setUser} = useContext(UserContext)
-  const userID=user.uid?user.uid:user.id
   useEffect(() => {
     onValue(ref(db,'stadiums'),(snapshot)=>{
       setData([])
@@ -31,14 +31,17 @@ const Terrains = () => {
 const renderItem = ({ item }) => (
   <View style={styles.item}>
     <Text style={styles.title}>{item.name}</Text>
+    <View style={styles.container1}>
+      <Map lat={item.lat} lng={item.lng} name={item.name} />
+    </View>
   </View>
 );
   return (
     <SafeAreaView style={styles.container}>
-      <FlatList data={data} keyExtractor={item => item.id?item.id:item.uid} renderItem={renderItem} />
+      <FlatList data={data} keyExtractor={item => item.uid} renderItem={renderItem} />
       <View style={{marginHorizontal: 16,marginVertical: 8}}>
         <TouchbaleIconCustom icon={faRightFromBracket} fnc={()=>handleLogout()} style={styles.icon}/>
-        </View>
+      </View>
     </SafeAreaView>
   )
 }

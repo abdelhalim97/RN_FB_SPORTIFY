@@ -16,10 +16,10 @@ import { UserContext } from '../contexts/user-context'
      const handleLogin =async()=>{
          try {
             var {user} = await signInWithEmailAndPassword(auth,form.email,form.password)
+         setUser(user)
          } catch (error) {
              console.log(error)
          }
-         setUser(user)
         //  navigation.navigate('Terrains')
      }
      const dataInput=[
@@ -44,6 +44,8 @@ import { UserContext } from '../contexts/user-context'
         onChangeText={text=>handleChangeLogIn(text,data.id)}/>
         )}
         <TouchableOpacityCustom text='Login' fnc={()=>handleLogin()} style={styles.btn}/>
+        {/* TODO: when the user connected but got out and get back to login page change the login 
+        text detect with user */}
         <GoogleAuth/>
         <TouchableOpacity onPress={()=>navigation.navigate('ForgotPassword')} style={{alignItems:'center',marginTop:hp('1%')}}>
             <Text style={{fontSize:20,color:'#AD9C9D'}}>Forgot password</Text>
