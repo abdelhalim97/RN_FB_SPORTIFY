@@ -1,2 +1,4 @@
 import Map from "./map";
-export {Map}
+import DatePicker from "./date-picker";
+
+export {Map,DatePicker}

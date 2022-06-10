@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View,FlatList,SafeAreaView,StatusBar } from 'react-native'
+import { StyleSheet, View,FlatList,SafeAreaView,StatusBar, Modal, Text } from 'react-native'
 import React,{useContext,useState,useEffect} from 'react'
 import { UserContext } from '../contexts/user-context'
 import { signOut } from 'firebase/auth'
@@ -6,11 +6,15 @@ import { ref,onValue } from 'firebase/database'
 import { auth,db } from '../../firebase'
 import {TouchbaleIconCustom} from '../reusable'
 import { faRightFromBracket } from '@fortawesome/free-solid-svg-icons'
-import {Map} from './sub-home'
+import {DatePicker, Map} from './sub-home'
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 const Terrains = () => {
   const [data, setData] = useState([])
   const {user,setUser} = useContext(UserContext)
+  const [rent, setRent] = useState(null)
+  const visible=rent?true:false
+  console.log(visible)
   useEffect(() => {
     onValue(ref(db,'stadiums'),(snapshot)=>{
       setData([])
@@ -27,20 +31,28 @@ const Terrains = () => {
   setUser(null)
   await signOut(auth)
 }
-
 const renderItem = ({ item }) => (
   <View style={styles.item}>
-    <Text style={styles.title}>{item.name}</Text>
     <View style={styles.container1}>
-      <Map lat={item.lat} lng={item.lng} name={item.name} />
+      <Map lat={item.lat} lng={item.lng} name={item.name} setRent={setRent} uid={item.uid} />
     </View>
   </View>
 );
   return (
     <SafeAreaView style={styles.container}>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={visible}
+        onRequestClose={() => {
+          setRent(null);
+        }}>
+          <DatePicker/>
+        </Modal>
       <FlatList data={data} keyExtractor={item => item.uid} renderItem={renderItem} />
       <View style={{marginHorizontal: 16,marginVertical: 8}}>
-        <TouchbaleIconCustom icon={faRightFromBracket} fnc={()=>handleLogout()} style={styles.icon}/>
+        <TouchbaleIconCustom icon={faRightFromBracket} fnc={()=>handleLogout()} 
+        style={styles.icon} color={{color:'#fff'}} size={35} />
       </View>
     </SafeAreaView>
   )
@@ -63,6 +75,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   icon:{
-    color:'#fff'
+    color:'#fff',
+    width:wp('9%')
   },
 })

@@ -4,7 +4,9 @@ import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-nativ
 
 const TouchableOpacityCustom = (props) => {
   return (
-      <TouchableOpacity onPress={props.fnc} style={[props.style ,styles.btn]}><Text style={{color:'#fff',fontSize:30}}>{props.text}</Text></TouchableOpacity>
+      <TouchableOpacity onPress={props.fnc} style={[props.style ,styles.btn]}>
+        <Text style={{color:'#fff',fontSize:30}}>{props.text}</Text>
+        </TouchableOpacity>
   )
 }
 
