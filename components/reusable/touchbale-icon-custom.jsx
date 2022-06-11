@@ -4,7 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-native-fontawesome'
 
 const TouchbaleIconCustom = (props) => {
   return (
-    <TouchableOpacity onPress={props.fnc} style={[styles.to,props.style]}>
+    <TouchableOpacity onPress={props.fnc} style={[styles.to,props.style]} disabled={props.disabled}>
         <FontAwesomeIcon icon={props.icon} size={props.size}  style={props.color} />
         {props.text&&<Text style={props.color} >{' ' +props.text}</Text>}
     </TouchableOpacity>
