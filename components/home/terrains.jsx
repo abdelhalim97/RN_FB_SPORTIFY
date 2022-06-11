@@ -2,10 +2,10 @@ import { StyleSheet, View,FlatList,SafeAreaView,StatusBar, Modal, Text } from 'r
 import React,{useContext,useState,useEffect} from 'react'
 import { UserContext } from '../contexts/user-context'
 import { signOut } from 'firebase/auth'
-import { ref,onValue } from 'firebase/database'
+import { push,ref,onValue,set } from 'firebase/database'
 import { auth,db } from '../../firebase'
 import {TouchbaleIconCustom} from '../reusable'
-import { faCalendarDay, faRightFromBracket, faClock, faBook, faCheck, faXmark } from '@fortawesome/free-solid-svg-icons'
+import { faCalendarDay, faRightFromBracket, faClock, faCheck, faXmark } from '@fortawesome/free-solid-svg-icons'
 import {DatePicker, Map, TimeToPicker, TimeFromPicker} from './sub-home'
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
@@ -27,6 +27,27 @@ const Terrains = () => {
       }
     })
 }, [user])
+const handleCloseModal = ()=>{
+  setRent(null)
+}
+const handleRservation = ()=>{
+  const newRef=ref(db,'stadiums'+'/'+rent.uid+'/reservation')
+  const newReservation=push(newRef)
+  const newReservationKey = newReservation.key
+    set(newReservation,{
+        uid:newReservationKey,
+        reserverId:user.id?user.id:user.uid,
+        year:timing.date.year,
+        month:timing.date.month,
+        day:timing.date.day,
+        fromHours:timing.timeFrom.hours,
+        fromMinutes:timing.timeFrom.minutes,
+        toHours:timing.timeTo.hours,
+        toMinutes:timing.timeTo.minutes,
+      });
+      setTiming({show:0,date:null,timeFrom:null,timeTo:null})
+      setRent(false)
+}
   const handleLogout=async()=>{
   setUser(null)
   await signOut(auth)
@@ -34,43 +55,51 @@ const Terrains = () => {
 const labels=[
   {id:0,
   text:`Date: ${timing?.date?.year} ${timing?.date?.month} ${timing?.date?.day} `,
+  curObj:timing.date,
   show:1,
   icon:faCalendarDay,
 },
 {id:1,
   text:`Date from: ${timing?.timeFrom?.hours} ${timing?.timeFrom?.minutes} `,
+  curObj:timing.timeFrom,
   show:2,
   icon:faClock,
 },
 {id:2,
   text:`Date to : ${timing?.timeTo?.hours} ${timing?.timeTo?.minutes} `,
+  curObj:timing.timeTo,
   show:3,
   icon:faClock,
 },
 ]
-const handleBook = ()=>{
-  console.log('done')
-}
+const btns=[
+  {
+    id:0,
+    disabled:!timing.timeTo||!timing.timeFrom||!timing.date||timing.timeFrom?.hours>timing.timeTo?.hours||(timing?.timeFrom?.hours===timing?.timeTo?.hours&&timing?.timeFrom?.minutes>=timing?.timeTo?.minutes),
+    fnc:handleRservation,
+    icon:faCheck,
+  },
+  {
+    id:1,
+    disabled:false,
+    fnc:handleCloseModal,
+    icon:faXmark,
+  }
+]
 const renderItem = ({ item }) => (
   <View style={styles.item}>
     <View style={styles.container1}>
-      <Map lat={item.lat} lng={item.lng} name={item.name} setRent={setRent} uid={item.uid} />
+      <Map userId={item.userId} cost={item.cost} lat={item.lat} lng={item.lng} name={item.name} setRent={setRent} uid={item.uid} />
     </View>
   </View>
 );
   return (
     <SafeAreaView style={styles.container}>
-      <Modal
-        animationType="slide"
-        transparent={false}
-        visible={visible}
-        onRequestClose={() => {
-          setRent(null);
-        }}>
+      <Modal animationType="slide" visible={visible} onRequestClose={() => {setRent(null);}}>
           <View style={{flex: 1,alignItems:'center',justifyContent:'flex-end',marginBottom:20}}>
             {labels.map(data=>
-              <View key={data.id} style={{flexDirection:'row',alignItems:'center',justifyContent:'center',marginTop:25}} >
-              <Text>{data.text}</Text>
+            <View key={data.id} style={{flexDirection:'row',alignItems:'center',justifyContent:'center',marginTop:25}} >
+              <Text>{data.curObj&&data.text}</Text>
               <TouchbaleIconCustom fnc={()=>setTiming({...timing,show:data.show})} style={styles.icon}
               color={{color:'#fff'}} icon={data.icon} size={35} disabled={data.id===2&&!timing.timeFrom?true:false}/>
             </View>
@@ -79,9 +108,11 @@ const renderItem = ({ item }) => (
             {timing.show===2&&<TimeFromPicker timing={timing} setTiming={setTiming} />}
             {timing.show===3&&<TimeToPicker timing={timing} setTiming={setTiming} />}
           </View>
-          <TouchbaleIconCustom fcn={()=>handleBook()} style={styles.icon} color={{color:'#fff'}} icon={faCheck} size={35}
-          disabled={timing.timeFrom?.hours>timing.timeTo?.hours||(timing?.timeFrom?.hours===timing?.timeTo?.hours&&timing?.timeFrom?.minutes>=timing?.timeTo?.minutes)?true:false}//wakteh disbled
-          />
+          <View style={{flexDirection:'row',justifyContent:'space-evenly'}}>
+            {btns.map(data=>
+              <TouchbaleIconCustom key={data.id} fnc={data.fnc} style={styles.icon} color={{color:'#fff'}}
+              icon={data.icon} size={35} disabled={data.disabled?true:false} />)}
+          </View>
         </Modal>
       <FlatList data={data} keyExtractor={item => item.uid} renderItem={renderItem} />
       <View style={{marginHorizontal: 16,marginVertical: 8}}>

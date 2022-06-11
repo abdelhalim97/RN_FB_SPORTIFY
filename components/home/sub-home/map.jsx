@@ -27,7 +27,7 @@ const Map = (props) => {
         <Text style={{color:'#E18787'}}>{props.name}</Text>
       </View>
       <TouchbaleIconCustom style={styles.booking} text='rent' size={20}
-       icon={faFutbol} fnc={()=>props.setRent(props.uid)} color={{color:'#E18787'}}/>
+       icon={faFutbol} fnc={()=>props.setRent(props)} color={{color:'#E18787'}}/>
     </View>
   )
 }
