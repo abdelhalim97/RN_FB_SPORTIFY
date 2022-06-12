@@ -4,16 +4,18 @@ import { UserContext } from '../contexts/user-context'
 import { signOut } from 'firebase/auth'
 import { push,ref,onValue,set } from 'firebase/database'
 import { auth,db } from '../../firebase'
-import {TouchbaleIconCustom} from '../reusable'
+import {Error, TouchbaleIconCustom} from '../reusable'
 import { faCalendarDay, faRightFromBracket, faClock, faCheck, faXmark } from '@fortawesome/free-solid-svg-icons'
 import {DatePicker, Map, TimeToPicker, TimeFromPicker} from './sub-home'
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 const Terrains = () => {
   const [data, setData] = useState([])
+  const [rentData, setRentData] = useState([])
   const {user,setUser} = useContext(UserContext)
   const [rent, setRent] = useState(null)
   const [timing, setTiming] = useState({show:0,date:null,timeFrom:null,timeTo:null})
+  const [errorDisplay, setErrorDisplay] = useState(false)
   const visible=rent?true:false
   useEffect(() => {
     onValue(ref(db,'stadiums'),(snapshot)=>{
@@ -26,11 +28,41 @@ const Terrains = () => {
         })
       }
     })
-}, [user])
+}, [])
+useEffect(() => {
+  if(rent?.uid){
+    onValue(ref(db,'stadiums'+'/'+rent?.uid+'/reservation'),(snapshot)=>{
+      setRentData([])
+      const dataLocalRent = snapshot.val();
+      if(dataLocalRent!==null){
+        Object.values(dataLocalRent).map((d)=>{
+          setRentData((oldArray)=>[...oldArray,d]);
+          return 0
+        })
+      }
+    })  
+  }
+}, [rent])
 const handleCloseModal = ()=>{
   setRent(null)
+  setErrorDisplay(false)
 }
 const handleRservation = ()=>{
+  const timeFromReserved = timing.timeFrom.hours*60+timing.timeFrom.minutes
+  const timeToReserved = timing.timeTo.hours*60+timing.timeTo.minutes
+  let test = true
+  rentData.map(rentData=>{
+    const timeFromDB = rentData.fromHours*60+rentData.fromMinutes
+    const timeToDB = rentData.toHours*60+rentData.toMinutes
+    const timeDBDiff=timeToDB+timeFromDB
+    const timeReservatoinDiff=timeToReserved+timeFromReserved
+  if(rentData.year===timing.date.year &&rentData.month===timing.date.month&& rentData.day===timing.date.day){
+    if(timeDBDiff>timeReservatoinDiff&&timeToReserved<timeFromDB){true}
+    else if(timeDBDiff<timeReservatoinDiff&&timeToDB<timeFromReserved){true}
+    else{ test=false }
+  }
+  })
+if(test){
   const newRef=ref(db,'stadiums'+'/'+rent.uid+'/reservation')
   const newReservation=push(newRef)
   const newReservationKey = newReservation.key
@@ -45,9 +77,13 @@ const handleRservation = ()=>{
         toHours:timing.timeTo.hours,
         toMinutes:timing.timeTo.minutes,
       });
-      setTiming({show:0,date:null,timeFrom:null,timeTo:null})
-      setRent(false)
+  setTiming({show:0,date:null,timeFrom:null,timeTo:null})
+  setRent(false)
+  setErrorDisplay(false)
 }
+else{setErrorDisplay(true)}
+}
+
   const handleLogout=async()=>{
   setUser(null)
   await signOut(auth)
@@ -108,7 +144,8 @@ const renderItem = ({ item }) => (
             {timing.show===2&&<TimeFromPicker timing={timing} setTiming={setTiming} />}
             {timing.show===3&&<TimeToPicker timing={timing} setTiming={setTiming} />}
           </View>
-          <View style={{flexDirection:'row',justifyContent:'space-evenly'}}>
+          {errorDisplay&&<View style={{marginBottom:20}}><Error text='Sorry this date already reserved' /></View>}
+          <View style={{flexDirection:'row',justifyContent:'space-evenly',marginBottom:20}}>
             {btns.map(data=>
               <TouchbaleIconCustom key={data.id} fnc={data.fnc} style={styles.icon} color={{color:'#fff'}}
               icon={data.icon} size={35} disabled={data.disabled?true:false} />)}
