@@ -16,7 +16,7 @@ import { UserContext } from '../contexts/user-context'
      const handleLogin =async()=>{
          try {
             var {user} = await signInWithEmailAndPassword(auth,form.email,form.password)
-         setUser(user)
+            setUser(user)
          } catch (error) {
              console.log(error)
          }

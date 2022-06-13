@@ -5,21 +5,23 @@ import { faGooglePlusSquare } from '@fortawesome/free-brands-svg-icons'
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
-import { useNavigation } from '@react-navigation/native';
 import { UserContext } from '../contexts/user-context'
-
+// import { useAddUser } from '../../custom-hooks';
+import { db } from '../../firebase';
+import { push, ref, set } from 'firebase/database';
 
 WebBrowser.maybeCompleteAuthSession();
 
 const GoogleAuth = () => {
   const {setUser} = useContext(UserContext)
-  const navigation = useNavigation()
+  const [data, setData] = useState([]);
   const [accessToken, setAccessToken] = useState();
   const [request, response, promptAsync] = Google.useAuthRequest({
       expoClientId:'832258486032-jfr3eq7ap5oisq5v66blvkdt3ggh04es.apps.googleusercontent.com',
       androidClientId: '832258486032-k612bqp9ff5t1pn6qrkoucaa300rscbl.apps.googleusercontent.com',
       iosClientId:'832258486032-ig2hqt3b707j82ns2tn0e6bv97aou74i.apps.googleusercontent.com',
     });
+
   useEffect(() => {
     if (response?.type === 'success') {
       const { authentication } = response;
@@ -30,8 +32,18 @@ const GoogleAuth = () => {
     let userInfoResponse = await fetch("https://www.googleapis.com/userinfo/v2/me", {
       headers: { Authorization: `Bearer ${accessToken}`}
     });
-    userInfoResponse.json().then(data => {
-      setUser(data);
+    userInfoResponse.json().then(user => {
+      const newRef=ref(db,'users')
+      const newUserRef=push(newRef)
+      const newUserKey=newUserRef.key
+      set(newUserRef,{
+        uid:newUserKey,
+        displayName:user.name,
+        email:user.email,
+        userId:user.id?user.id:user.uid,
+        photoURL:user.id?user.picture:user.photoURL,
+      })
+      setUser(user);
     });
     // navigation.navigate('Terrains')
   }

@@ -7,6 +7,7 @@ import { useNavigation } from '@react-navigation/core';
 import { InputCustom, TouchableOpacityCustom } from '../reusable';
 import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth'
 import { UserContext } from '../contexts/user-context'
+import { useAddUser } from '../../custom-hooks';
 
 const Signup = () => {
     const navigation = useNavigation()
@@ -16,12 +17,13 @@ const Signup = () => {
     const handleSignup =async()=>{
     try {
         var {user}=await createUserWithEmailAndPassword(auth,form.email,form.password)
-        await updateProfile(user,{'displayName':form.name,})
+        await updateProfile(user,{'displayName':form.name})
+        useAddUser(user,form.name)
+        setUser(user)
     } catch (error) {
         console.log(error)
     }
-    setUser(user)
-    // navigation.navigate('Terrains')
+    
 }
     const dataInput=[
         {
