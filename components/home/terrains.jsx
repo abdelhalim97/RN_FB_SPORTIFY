@@ -47,71 +47,72 @@ const handleCloseModal = ()=>{
   setRent(null)
   setErrorDisplay(false)
 }
-const handleRservation = ()=>{
-  const timeFromReserved = timing.timeFrom.hours*60+timing.timeFrom.minutes
-  const timeToReserved = timing.timeTo.hours*60+timing.timeTo.minutes
-  let test = true
-  rentData.map(rentData=>{
-    const timeFromDB = rentData.fromHours*60+rentData.fromMinutes
-    const timeToDB = rentData.toHours*60+rentData.toMinutes
-    const timeDBDiff=timeToDB+timeFromDB
-    const timeReservatoinDiff=timeToReserved+timeFromReserved
-  if(rentData.year===timing.date.year &&rentData.month===timing.date.month&& rentData.day===timing.date.day){
-    if(timeDBDiff>timeReservatoinDiff&&timeToReserved<timeFromDB){true}
-    else if(timeDBDiff<timeReservatoinDiff&&timeToDB<timeFromReserved){true}
-    else{ test=false }
+  const timeFromReserved = timing?.timeFrom?.hours*60+timing?.timeFrom?.minutes
+  const timeToReserved = timing?.timeTo?.hours*60+timing?.timeTo?.minutes
+  const handleRservation = ()=>{
+    let test = true
+    rentData.map(rentData=>{
+      const timeFromDB = rentData.fromHours*60+rentData.fromMinutes
+      const timeToDB = rentData.toHours*60+rentData.toMinutes
+      const timeDBDiff=timeToDB+timeFromDB
+      const timeReservatoinDiff=timeToReserved+timeFromReserved
+    if(rentData.year===timing.date.year &&rentData.month===timing.date.month&& rentData.day===timing.date.day){
+      if(timeDBDiff>timeReservatoinDiff&&timeToReserved<timeFromDB){true}
+      else if(timeDBDiff<timeReservatoinDiff&&timeToDB<timeFromReserved){true}
+      else{ test=false }
+    }
+    })
+    if(test){
+      const newRef=ref(db,'stadiums'+'/'+rent.uid+'/reservation')
+      const newReservation=push(newRef)
+      const newReservationKey = newReservation.key
+        set(newReservation,{
+            uid:newReservationKey,
+            reserverId:user.id?user.id:user.uid,
+            cost:rent.cost,
+            year:timing.date.year,
+            month:timing.date.month,
+            day:timing.date.day,
+            fromHours:timing.timeFrom.hours,
+            fromMinutes:timing.timeFrom.minutes,
+            toHours:timing.timeTo.hours,
+            toMinutes:timing.timeTo.minutes,
+          });
+      setTiming({show:0,date:null,timeFrom:null,timeTo:null})
+      setRent(false)
+      setErrorDisplay(false)
+    }
+    else{setErrorDisplay(true)}
   }
-  })
-if(test){
-  const newRef=ref(db,'stadiums'+'/'+rent.uid+'/reservation')
-  const newReservation=push(newRef)
-  const newReservationKey = newReservation.key
-    set(newReservation,{
-        uid:newReservationKey,
-        reserverId:user.id?user.id:user.uid,
-        year:timing.date.year,
-        month:timing.date.month,
-        day:timing.date.day,
-        fromHours:timing.timeFrom.hours,
-        fromMinutes:timing.timeFrom.minutes,
-        toHours:timing.timeTo.hours,
-        toMinutes:timing.timeTo.minutes,
-      });
-  setTiming({show:0,date:null,timeFrom:null,timeTo:null})
-  setRent(false)
-  setErrorDisplay(false)
-}
-else{setErrorDisplay(true)}
-}
 
   const handleLogout=async()=>{
   setUser(null)
   await signOut(auth)
 }
-const labels=[
-  {id:0,
-  text:`Date: ${timing?.date?.year} ${timing?.date?.month} ${timing?.date?.day} `,
-  curObj:timing.date,
-  show:1,
-  icon:faCalendarDay,
-},
-{id:1,
-  text:`Date from: ${timing?.timeFrom?.hours} ${timing?.timeFrom?.minutes} `,
-  curObj:timing.timeFrom,
-  show:2,
-  icon:faClock,
-},
-{id:2,
-  text:`Date to : ${timing?.timeTo?.hours} ${timing?.timeTo?.minutes} `,
-  curObj:timing.timeTo,
-  show:3,
-  icon:faClock,
-},
-]
+  const labels=[
+    {id:0,
+    text:`Date: ${timing?.date?.year} ${timing?.date?.month} ${timing?.date?.day} `,
+    curObj:timing.date,
+    show:1,
+    icon:faCalendarDay,
+  },
+  {id:1,
+    text:`Date from: ${timing?.timeFrom?.hours} ${timing?.timeFrom?.minutes} `,
+    curObj:timing.timeFrom,
+    show:2,
+    icon:faClock,
+  },
+  {id:2,
+    text:`Date to : ${timing?.timeTo?.hours} ${timing?.timeTo?.minutes} `,
+    curObj:timing.timeTo,
+    show:3,
+    icon:faClock,
+  },
+  ]
 const btns=[
   {
     id:0,
-    disabled:!timing.timeTo||!timing.timeFrom||!timing.date||timing.timeFrom?.hours>timing.timeTo?.hours||(timing?.timeFrom?.hours===timing?.timeTo?.hours&&timing?.timeFrom?.minutes>=timing?.timeTo?.minutes),
+    disabled:!timing.timeTo||!timing.timeFrom||!timing.date||!(timeFromReserved<timeToReserved),
     fnc:handleRservation,
     icon:faCheck,
   },
@@ -132,9 +133,10 @@ const renderItem = ({ item }) => (
   return (
     <SafeAreaView style={styles.container}>
       <Modal animationType="slide" visible={visible} onRequestClose={() => {setRent(null);}}>
+        <View style={{elevation:15}}><Text style={styles.name}>{rent?.name}</Text></View>
           <View style={{flex: 1,alignItems:'center',justifyContent:'flex-end',marginBottom:20}}>
             {labels.map(data=>
-            <View key={data.id} style={{flexDirection:'row',alignItems:'center',justifyContent:'center',marginTop:25}} >
+            <View key={data.id} style={styles.date} >
               <Text>{data.curObj&&data.text}</Text>
               <TouchbaleIconCustom fnc={()=>setTiming({...timing,show:data.show})} style={styles.icon}
               color={{color:'#fff'}} icon={data.icon} size={35} disabled={data.id===2&&!timing.timeFrom?true:false}/>
@@ -176,6 +178,8 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
   },
+  name:{textAlign:'center',borderBottomWidth:2,borderColor:'#AD9C9D',backgroundColor:'#fff',elevation:25},
+  date:{flexDirection:'row',alignItems:'center',justifyContent:'center',marginTop:25},
   icon:{
     borderRadius:30,
     color:'#fff',
