@@ -6,50 +6,63 @@ import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-nativ
 import * as Google from 'expo-auth-session/providers/google';
 import * as WebBrowser from 'expo-web-browser';
 import { UserContext } from '../contexts/user-context'
-// import { useAddUser } from '../../custom-hooks';
 import { db } from '../../firebase';
-import { push, ref, set } from 'firebase/database';
+import { onValue, push, ref, set } from 'firebase/database';
 
 WebBrowser.maybeCompleteAuthSession();
 
 const GoogleAuth = () => {
   const {setUser} = useContext(UserContext)
-  const [data, setData] = useState([]);
+  const [dataUsers, setDataUsers] = useState([]);
   const [accessToken, setAccessToken] = useState();
+  useEffect(() => {
+    onValue(ref(db,'users'),(snapshot)=>{
+        setDataUsers([])
+      const dataLocal = snapshot.val();
+      if(dataLocal!==null){
+        Object.values(dataLocal).map((d)=>{
+            setDataUsers((oldArray)=>[...oldArray,d]);
+          return 0
+        })
+      }
+    })
+}, [])
   const [request, response, promptAsync] = Google.useAuthRequest({
       expoClientId:'832258486032-jfr3eq7ap5oisq5v66blvkdt3ggh04es.apps.googleusercontent.com',
       androidClientId: '832258486032-k612bqp9ff5t1pn6qrkoucaa300rscbl.apps.googleusercontent.com',
       iosClientId:'832258486032-ig2hqt3b707j82ns2tn0e6bv97aou74i.apps.googleusercontent.com',
     });
-
   useEffect(() => {
     if (response?.type === 'success') {
       const { authentication } = response;
       setAccessToken(response.authentication.accessToken);
       }
   }, [response])
+
   async function getUserData() {
+    let test = false
     let userInfoResponse = await fetch("https://www.googleapis.com/userinfo/v2/me", {
       headers: { Authorization: `Bearer ${accessToken}`}
     });
     userInfoResponse.json().then(user => {
-      const newRef=ref(db,'users')
-      const newUserRef=push(newRef)
-      const newUserKey=newUserRef.key
-      set(newUserRef,{
-        uid:newUserKey,
-        displayName:user.name,
-        email:user.email,
-        userId:user.id?user.id:user.uid,
-        photoURL:user.id?user.picture:user.photoURL,
-      })
+    dataUsers.map(userDB=>userDB.email===user.email?test=true:null)
+      if(!test){
+        const newRef=ref(db,'users')
+        const newUserRef=push(newRef)
+        const newUserKey=newUserRef.key
+        set(newUserRef,{
+          uid:newUserKey,
+          displayName:user.name,
+          email:user.email,
+          photoURL:user.id?user.picture:user.photoURL,
+        })
+      }
       setUser(user);
     });
-    // navigation.navigate('Terrains')
   }
   return (
     <TouchableOpacity style={styles.container} 
-    // disabled={!request}
+    disabled={!dataUsers}
     onPress={() => {
       accessToken ? getUserData() : promptAsync({showInRecents: true})
       }}>

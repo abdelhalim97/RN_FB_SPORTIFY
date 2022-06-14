@@ -68,7 +68,7 @@ const handleCloseModal = ()=>{
       const newReservationKey = newReservation.key
         set(newReservation,{
             uid:newReservationKey,
-            reserverId:user.id?user.id:user.uid,
+            reserverEmail:user.email,
             cost:rent.cost,
             year:timing.date.year,
             month:timing.date.month,

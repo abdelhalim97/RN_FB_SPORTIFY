@@ -8,7 +8,6 @@ const useAddUser=(user,displayName)=>{
               uid:newUserKey,
               displayName,
               email:user.email,
-              userId:user.id?user.id:user.uid,
               photoURL:user.id?user.picture:user.photoURL,
             })
 }
