@@ -109,10 +109,10 @@ const handleCloseModal = ()=>{
     icon:faClock,
   },
   ]
-const btns=[
+  const btns=[
   {
     id:0,
-    disabled:!timing.timeTo||!timing.timeFrom||!timing.date||!(timeFromReserved<timeToReserved),
+    disabled:!timing.timeTo||!timing.timeFrom||!timing.date||!((parseInt(timing?.timeFrom?.hours)*60)+parseInt(timing?.timeFrom?.minutes) < (parseInt(timing?.timeTo?.hours)*60)+parseInt(timing?.timeTo?.minutes)),
     fnc:handleRservation,
     icon:faCheck,
   },
@@ -123,6 +123,7 @@ const btns=[
     icon:faXmark,
   }
 ]
+
 const renderItem = ({ item }) => (
   <View style={styles.item}>
     <View style={styles.container1}>
