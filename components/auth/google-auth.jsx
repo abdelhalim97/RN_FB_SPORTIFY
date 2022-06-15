@@ -8,6 +8,7 @@ import * as WebBrowser from 'expo-web-browser';
 import { UserContext } from '../contexts/user-context'
 import { db } from '../../firebase';
 import { onValue, push, ref, set } from 'firebase/database';
+import { View } from 'react-native-web';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -66,7 +67,7 @@ const GoogleAuth = () => {
     onPress={() => {
       accessToken ? getUserData() : promptAsync({showInRecents: true})
       }}>
-      <FontAwesomeIcon icon={faGooglePlusSquare} size={35} color='#fff'/>
+        <FontAwesomeIcon icon={faGooglePlusSquare} size={35} color='#fff' />
       <Text style={{color:'#fff',padding:5}}>{accessToken ? "Get User Data" : "Login"}</Text>
     </TouchableOpacity>
   )
@@ -76,7 +77,10 @@ export default GoogleAuth
 
 const styles = StyleSheet.create({
     width: wp('65%'),
-    container:{backgroundColor:'#AD9C9D',
+    container:{
+      justifyContent:'center',
+      width:wp('65%'),
+      backgroundColor:'#AD9C9D',
     borderRadius:5,
     flexDirection:'row',
     alignItems:'center',

@@ -49,7 +49,8 @@ const styles = StyleSheet.create({
         position: "absolute",
         top: hp('0%'),
         left:wp('0%'),
-        backgroundColor: 'rgba(255, 255, 255, 0.6)'
+        backgroundColor: 'rgba(255, 255, 255, 0.8)',
+        borderRadius:5
       },
       booking:{
         color:'#E18787',
@@ -58,7 +59,7 @@ const styles = StyleSheet.create({
         bot: hp('0%'),
         right:wp('-1%'),
         width:wp('20%'),
-        backgroundColor: 'rgba(255, 255, 255, 0.6)',
-        borderRadius:7,
+        backgroundColor: 'rgba(255, 255, 255, 1)',
+        borderRadius:9,
       }
 })

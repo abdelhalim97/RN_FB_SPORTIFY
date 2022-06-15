@@ -28,18 +28,20 @@ import { UserContext } from '../contexts/user-context'
              placeHolder:'Email',
              pass:false,
             keyboardType:'email-address',
+            style:styles.wpTopBot
          },
          {
             id:'password',
             placeHolder:'Password',
             pass:true,
             keyboardType:'default',
+            style:styles.passWidth
         }
      ]
   return (
     <CircleContainer>
     {dataInput.map(data=>
-        <InputCustom key={data.id} placeHolder={data.placeHolder}
+        <InputCustom key={data.id} placeHolder={data.placeHolder} style={data.style}
         autoFocus={data.id==='email'} pass={data.pass} keyboardType={data.keyboardType}
         onChangeText={text=>handleChangeLogIn(text,data.id)}/>
         )}
@@ -48,10 +50,10 @@ import { UserContext } from '../contexts/user-context'
         text detect with user */}
         <GoogleAuth/>
         <TouchableOpacity onPress={()=>navigation.navigate('ForgotPassword')} style={{alignItems:'center',marginTop:hp('1%')}}>
-            <Text style={{fontSize:20,color:'#AD9C9D'}}>Forgot password</Text>
+            <Text style={{fontSize:20,color:'#AD9C9D'}}>Forgot password?</Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={()=>navigation.navigate('Signup')} style={{alignItems:'center',marginTop:hp('1%')}}>
-            <Text style={{fontSize:20,color:'#AD9C9D'}}>You don't have an account?</Text>
+        <TouchableOpacity onPress={()=>navigation.navigate('Signup')} style={[styles.wpTopBot,{alignItems:'center',marginTop:hp('1%')}]}>
+            <Text style={{textAlign:'center',fontSize:20,color:'#AD9C9D'}}>You don't have an account?</Text>
         </TouchableOpacity>
     </CircleContainer>
   )
@@ -61,4 +63,8 @@ const styles = StyleSheet.create({
   btn:{
       marginTop:hp('3%'),
   },
+  wpTopBot:{
+    width:wp('50%')
+  },
+  passWidth:{width:wp('55%')}
 });

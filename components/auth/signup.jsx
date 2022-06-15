@@ -31,30 +31,33 @@ const Signup = () => {
             placeHolder:'Name',
             pass:false,
            keyboardType:'default',
+           style:styles.wpTopBot,
         },
         {
             id:'email',
             placeHolder:'Email',
             pass:false,
            keyboardType:'email-address',
+           style:styles.width,
         },
         {
            id:'password',
            placeHolder:'Password',
            pass:true,
            keyboardType:'default',
+           style:styles.widthCenter,
        }
     ]
   return (
     <CircleContainer>
         {dataInput.map(data=>
-            <InputCustom key={data.id} placeHolder={data.placeHolder}
+            <InputCustom key={data.id} placeHolder={data.placeHolder} style={data.style}
             autoFocus={data.id==='name'} pass={data.pass} keyboardType={data.keyboardType}
             onChangeText={text=>handleChangeLogIn(text,data.id)}/>
         )}
         <TouchableOpacityCustom text='Signup' fnc={()=>handleSignup()} style={styles.btn}/>
-        <TouchableOpacity onPress={()=>navigation.navigate('Login')} style={{alignItems:'center',marginTop:hp('2%')}}>
-            <Text style={{fontSize:20,color:'#AD9C9D'}}>Already have an account?</Text>
+        <TouchableOpacity onPress={()=>navigation.navigate('Login')} style={[{alignItems:'center',marginTop:hp('2%')},styles.wpTopBot]}>
+            <Text style={{textAlign:'center',fontSize:20,color:'#AD9C9D'}}>Already have an account?</Text>
         </TouchableOpacity>
     </CircleContainer>
   )
@@ -66,4 +69,10 @@ const styles = StyleSheet.create({
     btn:{
         marginTop:hp('3%'),
     },
+    width:{width:wp('60%')},
+    widthCenter:{width:wp('65%')},
+
+    wpTopBot:{
+        width:wp('55%')
+      },
 })

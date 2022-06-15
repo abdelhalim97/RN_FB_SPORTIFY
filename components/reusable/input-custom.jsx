@@ -5,7 +5,7 @@ import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-nativ
 const InputCustom = (props) => {
   return (
     <>
-      <TextInput  style={{color:"#000",width:wp('65%')}}
+      <TextInput  style={[{color:"#000"},props.style]}
       maxLength={300} secureTextEntry={props.pass} placeholder={props.placeHolder}
       {...props} keyboardType={props.keyboardType}/>
     </>
