@@ -1,59 +1,34 @@
 import { StyleSheet, View,FlatList,SafeAreaView,StatusBar, Modal, Text } from 'react-native'
-import React,{useContext,useState,useEffect} from 'react'
+import React,{useContext,useState} from 'react'
 import { UserContext } from '../contexts/user-context'
 import { signOut } from 'firebase/auth'
-import { push,ref,onValue,set } from 'firebase/database'
-import { auth,db } from '../../firebase'
+import { auth } from '../../firebase'
 import {Error, TouchbaleIconCustom} from '../reusable'
 import { faCalendarDay, faRightFromBracket, faClock, faCheck, faXmark } from '@fortawesome/free-solid-svg-icons'
 import {DatePicker, Map, TimeToPicker, TimeFromPicker} from './sub-home'
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import {useFetchAllStadiums,useAddReservation, useFetchReservation} from '../../custom-hooks'
 
 const Terrains = () => {
-  const [data, setData] = useState([])
-  const [rentData, setRentData] = useState([])
   const {user,setUser} = useContext(UserContext)
   const [rent, setRent] = useState(null)
   const [timing, setTiming] = useState({show:0,date:null,timeFrom:null,timeTo:null})
   const [errorDisplay, setErrorDisplay] = useState(false)
   const visible=rent?true:false
-  useEffect(() => {
-    onValue(ref(db,'stadiums'),(snapshot)=>{
-      setData([])
-      const dataLocal = snapshot.val();
-      if(dataLocal!==null){
-        Object.values(dataLocal).map((d)=>{
-          setData((oldArray)=>[...oldArray,d]);
-          return 0
-        })
-      }
-    })
-}, [])
-useEffect(() => {
-  if(rent?.uid){
-    onValue(ref(db,'stadiums'+'/'+rent?.uid+'/reservation'),(snapshot)=>{
-      setRentData([])
-      const dataLocalRent = snapshot.val();
-      if(dataLocalRent!==null){
-        Object.values(dataLocalRent).map((d)=>{
-          setRentData((oldArray)=>[...oldArray,d]);
-          return 0
-        })
-      }
-    })  
-  }
-}, [rent])
+  const allStadiums = useFetchAllStadiums()
+  const rentData = useFetchReservation(rent)
+
 const handleCloseModal = ()=>{
   setRent(null)
   setErrorDisplay(false)
 }
-  const timeFromReserved = timing?.timeFrom?.hours*60+timing?.timeFrom?.minutes
-  const timeToReserved = timing?.timeTo?.hours*60+timing?.timeTo?.minutes
+  const timeFromReserved = (parseInt(timing?.timeFrom?.hours)*60)+parseInt(timing?.timeFrom?.minutes)
+  const timeToReserved = (parseInt(timing?.timeTo?.hours)*60)+parseInt(timing?.timeTo?.minutes)
   const handleRservation = ()=>{
     let test = true
     rentData.map(rentData=>{
-      const timeFromDB = rentData.fromHours*60+rentData.fromMinutes
-      const timeToDB = rentData.toHours*60+rentData.toMinutes
+      const timeFromDB = (parseInt(rentData.fromHours)*60)+parseInt(rentData.fromMinutes)
+      const timeToDB = (parseInt(rentData.toHours)*60)+parseInt(rentData.toMinutes)
       const timeDBDiff=timeToDB+timeFromDB
       const timeReservatoinDiff=timeToReserved+timeFromReserved
     if(rentData.year===timing.date.year &&rentData.month===timing.date.month&& rentData.day===timing.date.day){
@@ -63,21 +38,7 @@ const handleCloseModal = ()=>{
     }
     })
     if(test){
-      const newRef=ref(db,'stadiums'+'/'+rent.uid+'/reservation')
-      const newReservation=push(newRef)
-      const newReservationKey = newReservation.key
-        set(newReservation,{
-            uid:newReservationKey,
-            reserverEmail:user.email,
-            cost:rent.cost,
-            year:timing.date.year,
-            month:timing.date.month,
-            day:timing.date.day,
-            fromHours:timing.timeFrom.hours,
-            fromMinutes:timing.timeFrom.minutes,
-            toHours:timing.timeTo.hours,
-            toMinutes:timing.timeTo.minutes,
-          });
+      useAddReservation(user,rent,timing)
       setTiming({show:0,date:null,timeFrom:null,timeTo:null})
       setRent(false)
       setErrorDisplay(false)
@@ -91,7 +52,7 @@ const handleCloseModal = ()=>{
 }
   const labels=[
     {id:0,
-    text:`Date: ${timing?.date?.year} ${timing?.date?.month} ${timing?.date?.day} `,
+    text:`Date: ${timing?.date?.year} ${parseInt(timing?.date?.month)+1} ${timing?.date?.day} `,
     curObj:timing.date,
     show:1,
     icon:faCalendarDay,
@@ -154,7 +115,7 @@ const renderItem = ({ item }) => (
               icon={data.icon} size={35} disabled={data.disabled?true:false} />)}
           </View>
         </Modal>
-      <FlatList data={data} keyExtractor={item => item.uid} renderItem={renderItem} />
+      <FlatList data={allStadiums} keyExtractor={item => item.uid} renderItem={renderItem} />
       <View style={{marginHorizontal: 16,marginVertical: 8}}>
         <TouchbaleIconCustom icon={faRightFromBracket} fnc={()=>handleLogout()} 
         style={styles.icon} color={{color:'#fff'}} size={35} />
