@@ -7,7 +7,7 @@ const useAddReservation = (user,rent,timing)=>{
       const newReservationKey = newReservation.key
         set(newReservation,{
             uid:newReservationKey,
-            // reserverEmail:user.email,
+            reserverEmail:user.email,
             stadiumUid:rent.uid,
             cost:rent.cost,
             year:timing.date.year,

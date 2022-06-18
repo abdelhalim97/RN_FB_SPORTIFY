@@ -68,7 +68,7 @@ const GoogleAuth = () => {
       accessToken ? getUserData() : promptAsync({showInRecents: true})
       }}>
         <FontAwesomeIcon icon={faGooglePlusSquare} size={35} color='#fff' />
-      <Text style={{color:'#fff',padding:5}}>{accessToken ? "Get User Data" : "Login"}</Text>
+      <Text style={{color:'#fff',padding:5}}>{accessToken ? "Connected Get In" : "Login"}</Text>
     </TouchableOpacity>
   )
 }
