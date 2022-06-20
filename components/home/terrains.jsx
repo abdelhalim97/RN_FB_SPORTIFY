@@ -1,13 +1,12 @@
 import { StyleSheet, View,FlatList,SafeAreaView,StatusBar, Modal, Text } from 'react-native'
 import React,{useContext,useState} from 'react'
 import { UserContext } from '../contexts/user-context'
-import { signOut } from 'firebase/auth'
-import { auth } from '../../firebase'
-import {Error, TouchbaleIconCustom} from '../reusable'
-import { faCalendarDay, faRightFromBracket, faClock, faCheck, faXmark } from '@fortawesome/free-solid-svg-icons'
+import {Error, Navigation, TouchbaleIconCustom} from '../reusable'
+import { faCalendarDay, faClock, faCheck, faXmark } from '@fortawesome/free-solid-svg-icons'
 import {DatePicker, Map, TimeToPicker, TimeFromPicker} from './sub-home'
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {useFetchAllStadiums,useAddReservation, useFetchReservation} from '../../custom-hooks'
+import { useNavigation } from '@react-navigation/core';
 
 const Terrains = () => {
   const {user,setUser} = useContext(UserContext)
@@ -17,7 +16,7 @@ const Terrains = () => {
   const visible=rent?true:false
   const allStadiums = useFetchAllStadiums()
   const rentData = useFetchReservation(rent)
-
+  const navigation = useNavigation()
 const handleCloseModal = ()=>{
   setRent(null)
   setErrorDisplay(false)
@@ -46,10 +45,7 @@ const handleCloseModal = ()=>{
     else{setErrorDisplay(true)}
   }
 
-  const handleLogout=async()=>{
-  setUser(null)
-  await signOut(auth)
-}
+  
   const labels=[
     {id:0,
     text:`Date: ${timing?.date?.year} ${parseInt(timing?.date?.month)+1} ${timing?.date?.day} `,
@@ -116,10 +112,7 @@ const renderItem = ({ item }) => (
           </View>
         </Modal>
       <FlatList data={allStadiums} keyExtractor={item => item.uid} renderItem={renderItem} />
-      <View style={{marginHorizontal: 16,marginVertical: 8}}>
-        <TouchbaleIconCustom icon={faRightFromBracket} fnc={()=>handleLogout()} 
-        style={styles.icon} color={{color:'#fff'}} size={35} />
-      </View>
+      <Navigation/>
     </SafeAreaView>
   )
 }

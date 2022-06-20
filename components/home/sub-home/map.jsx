@@ -1,12 +1,14 @@
-import { StyleSheet, View, Text,TouchableOpacity } from 'react-native';
-import React from 'react'
+import { StyleSheet, View, Text } from 'react-native';
+import React, { useContext } from 'react'
 import MapView from 'react-native-maps';
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import { Marker } from 'react-native-maps';
 import { TouchbaleIconCustom } from '../../reusable';
 import { faFutbol } from '@fortawesome/free-solid-svg-icons';
+import { UserContext } from '../../contexts/user-context';
 
 const Map = (props) => {
+    const {user} = useContext(UserContext)
     const region = {
       latitude: parseFloat(props.lat),
       longitude: parseFloat(props.lng),
@@ -26,7 +28,7 @@ const Map = (props) => {
       <View style={styles.title}>
         <Text style={{color:'#E18787'}}>{props.name}</Text>
       </View>
-      <TouchbaleIconCustom style={styles.booking} text='rent' size={20}
+      <TouchbaleIconCustom style={styles.booking} text='rent' size={20} disabled={!user}
        icon={faFutbol} fnc={()=>props.setRent(props)} color={{color:'#E18787'}}/>
     </View>
   )

@@ -1,7 +1,7 @@
 import { StyleSheet,TouchableOpacity,Text } from 'react-native'
 import React,{useState,useContext} from 'react'
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
-import {InputCustom, TouchableOpacityCustom} from '../reusable';
+import {InputCustom, Navigation, TouchableOpacityCustom} from '../reusable';
 import {auth} from '../../firebase'
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import CircleContainer from '../reusable/circle-container';
@@ -17,10 +17,10 @@ import { UserContext } from '../contexts/user-context'
          try {
             var {user} = await signInWithEmailAndPassword(auth,form.email,form.password)
             setUser(user)
+            navigation.navigate('Terrains')
          } catch (error) {
              console.log(error)
          }
-        //  navigation.navigate('Terrains')
      }
      const dataInput=[
          {
@@ -39,6 +39,7 @@ import { UserContext } from '../contexts/user-context'
         }
      ]
   return (
+    <>
     <CircleContainer>
     {dataInput.map(data=>
         <InputCustom key={data.id} placeHolder={data.placeHolder} style={data.style}
@@ -54,6 +55,9 @@ import { UserContext } from '../contexts/user-context'
             <Text style={{textAlign:'center',fontSize:20,color:'#AD9C9D'}}>You don't have an account?</Text>
         </TouchableOpacity>
     </CircleContainer>
+    <Navigation/>
+    </>
+    
   )
 }
 export default Login

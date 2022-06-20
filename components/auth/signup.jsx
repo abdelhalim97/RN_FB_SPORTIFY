@@ -23,6 +23,7 @@ const Signup = () => {
     } catch (error) {
         console.log(error)
     }
+    navigation.navigate('Terrains')
     
 }
     const dataInput=[

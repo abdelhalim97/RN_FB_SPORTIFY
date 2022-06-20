@@ -9,6 +9,7 @@ import { UserContext } from '../contexts/user-context'
 import { db } from '../../firebase';
 import { onValue, push, ref, set } from 'firebase/database';
 import { View } from 'react-native-web';
+import { useNavigation } from '@react-navigation/core';
 
 WebBrowser.maybeCompleteAuthSession();
 
@@ -16,6 +17,7 @@ const GoogleAuth = () => {
   const {setUser} = useContext(UserContext)
   const [dataUsers, setDataUsers] = useState([]);
   const [accessToken, setAccessToken] = useState();
+  const navigation = useNavigation()
   useEffect(() => {
     onValue(ref(db,'users'),(snapshot)=>{
         setDataUsers([])
@@ -59,6 +61,7 @@ const GoogleAuth = () => {
         })
       }
       setUser(user);
+  navigation.navigate('Terrains')
     });
   }
   return (
