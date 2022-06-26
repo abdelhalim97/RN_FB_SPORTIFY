@@ -1,4 +1,4 @@
-import { StyleSheet, View,FlatList,SafeAreaView,StatusBar, Modal, Text } from 'react-native'
+import { StyleSheet, View,FlatList,SafeAreaView,StatusBar, Modal, Text, ActivityIndicator } from 'react-native'
 import React,{useContext,useState} from 'react'
 import { UserContext } from '../contexts/user-context'
 import {Error, Navigation, TouchbaleIconCustom} from '../reusable'
@@ -6,7 +6,6 @@ import { faCalendarDay, faClock, faCheck, faXmark } from '@fortawesome/free-soli
 import {DatePicker, Map, TimeToPicker, TimeFromPicker} from './sub-home'
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {useFetchAllStadiums,useAddReservation, useFetchReservation} from '../../custom-hooks'
-import { useNavigation } from '@react-navigation/core';
 
 const Terrains = () => {
   const {user,setUser} = useContext(UserContext)
@@ -16,7 +15,6 @@ const Terrains = () => {
   const visible=rent?true:false
   const allStadiums = useFetchAllStadiums()
   const rentData = useFetchReservation(rent)
-  const navigation = useNavigation()
 const handleCloseModal = ()=>{
   setRent(null)
   setErrorDisplay(false)
@@ -111,7 +109,9 @@ const renderItem = ({ item }) => (
               icon={data.icon} size={35} disabled={data.disabled?true:false} />)}
           </View>
         </Modal>
-      <FlatList data={allStadiums} keyExtractor={item => item.uid} renderItem={renderItem} />
+        {console.log(allStadiums)}
+        {!allStadiums?<ActivityIndicator size="large" color="#E18787" />:
+        <FlatList data={allStadiums} keyExtractor={item => item.uid} renderItem={renderItem} />}
       <Navigation/>
     </SafeAreaView>
   )
