@@ -14,9 +14,7 @@ const DatePicker = ({timing,setTiming}) => {
     }})
   }
   return (
-    <>
       <DateTimePicker minimumDate={new Date()} onChange={onChange} value={new Date()} />
-    </>
   )
 }
 

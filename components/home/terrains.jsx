@@ -109,7 +109,6 @@ const renderItem = ({ item }) => (
               icon={data.icon} size={35} disabled={data.disabled?true:false} />)}
           </View>
         </Modal>
-        {console.log(allStadiums)}
         {!allStadiums?<ActivityIndicator size="large" color="#E18787" />:
         <FlatList data={allStadiums} keyExtractor={item => item.uid} renderItem={renderItem} />}
       <Navigation/>

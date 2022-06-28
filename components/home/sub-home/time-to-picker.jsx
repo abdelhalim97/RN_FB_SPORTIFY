@@ -13,9 +13,7 @@ const TimeToPicker = ({timing,setTiming}) => {
     }})
   }
   return (
-    <>
       <DateTimePicker mode="time" value={new Date()} is24Hour={true} onChange={onChange}/>
-    </>
   )
 }
 

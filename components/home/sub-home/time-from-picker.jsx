@@ -13,9 +13,7 @@ const TimeFromPicker = ({timing,setTiming}) => {
     }})
   }
   return (
-    <>
       <DateTimePicker mode="time" value={new Date()} is24Hour={true} minimumDate={new Date()} onChange={onChange}/>
-    </>
   )
 }
 
